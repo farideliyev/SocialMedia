@@ -1,0 +1,13 @@
+.photo{
+    width: 200px;
+    height: 150px;
+}
+
+.activePage{
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.span{
+    margin: 10px;
+}

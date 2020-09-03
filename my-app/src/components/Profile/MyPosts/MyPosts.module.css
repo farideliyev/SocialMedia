@@ -1,0 +1,12 @@
+button{
+ display: block;
+ margin-top: 10px;
+ margin-bottom: 10px; 
+}
+
+.textarea{
+    margin: 10px;
+}
+.myPostsTitle{
+    padding:10px;
+}

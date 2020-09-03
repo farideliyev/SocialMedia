@@ -1,0 +1,13 @@
+
+.activePage{
+    font-weight: bold;
+    cursor: pointer;
+}
+
+span{
+    padding: 2px;
+}
+
+.paginator {
+    margin: 10px;
+}
