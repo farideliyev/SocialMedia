@@ -2,24 +2,39 @@ import React from "react";
 import { connect } from "react-redux";
 import Users from "./Users";
 import { followThunkCreator, unfollowThunkCreator,
-    toggleFollow, 
     getUsersThunkCreator,
-    onPageChangedThunkCreator
+
 
 } from "../../redux/user-reducer";
 import Preloader from "../common/Preloader";
 import { compose } from "redux";
 import { getUsers, getTotalUsersCount, getPageSize, getCurrentPage, getIsFetching, getFollowingInProgress } from "../../redux/users-selectors";
+import {AppStateType} from "../../redux/redux-store";
+import {UserType} from "../../redux/types/types";
 
+type MapStateToPropsType={
+    currentPage:number
+    pageSize:number
+    totalUsersCount:number
+    users:Array<UserType>
+    isFetching:boolean
+    followingInProgress:Array<number>
+}
+type MapDispatchToPropsType={
+    unfollowThunkCreator:(userId:number)=>void
+    followThunkCreator:(userId:number)=>void
+    getUsersThunkCreator:(currentPage:number, pageSize:number)=>void
+}
 
-class UsersContainer extends React.Component {
+type PropsType= MapDispatchToPropsType & MapStateToPropsType
+class UsersContainer extends React.Component<PropsType> {
 
   componentDidMount() {
     this.props.getUsersThunkCreator(this.props.currentPage, this.props.pageSize)
   }
 
-    onPageChanged = (pageNumber) => {
-        this.props.onPageChangedThunkCreator(pageNumber, this.props.pageSize)
+    onPageChanged = (pageNumber:number) => {
+        this.props.getUsersThunkCreator(pageNumber, this.props.pageSize)
 
   }
 
@@ -33,19 +48,13 @@ class UsersContainer extends React.Component {
                     onPageChanged={this.onPageChanged}
                     unfollowThunkCreator={this.props.unfollowThunkCreator}
                     followThunkCreator={this.props.followThunkCreator}
-                    isFetching={this.props.isFetching}
                     followingInProgress={this.props.followingInProgress}
-                    toggleFollow={this.props.toggleFollow}
-
-                    
-
-      
       />
       </>
   }
 }
 
-let mapStateProps=(state)=>{
+let mapStateProps=(state:AppStateType)=>{
     return{
         users: getUsers(state),
         totalUsersCount: getTotalUsersCount(state),
@@ -83,6 +92,6 @@ let mapStateProps=(state)=>{
 
 export default compose(
 
-  connect(mapStateProps, 
-    {followThunkCreator,unfollowThunkCreator,toggleFollow,getUsersThunkCreator,onPageChangedThunkCreator})
+  connect<MapStateToPropsType, MapDispatchToPropsType, null, AppStateType>(mapStateProps,
+    {followThunkCreator,unfollowThunkCreator,getUsersThunkCreator})
 )(UsersContainer)
