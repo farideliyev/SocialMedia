@@ -10,6 +10,8 @@ export const instance = axios.create({
 })
 export type GetItemsType={
     items: Array<UserType>
+    totalCount:number
+    error:string | null
 }
 export enum ResultCodesEnum{
     Success=0,
@@ -21,8 +23,8 @@ export enum ResultCodeForCaptchaEnum{
 }
 
 
-export type ResponseType<D = {}, RC = ResultCodesEnum> = {
+export type ResponseType<D = {}, RC = ResultCodesEnum | ResultCodeForCaptchaEnum> = {
     data: D,
     resultCode: RC,
-    message: Array<string>
+    messages: Array<string>
 }

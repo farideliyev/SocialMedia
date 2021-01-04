@@ -1,14 +1,7 @@
 import {PhotosType, PostType, ProfileType} from "./types/types";
 import {usersAPI} from "../api/users-api";
-
-// const UPDATE_POST="UPDATE-POST";
-const ADD_POST="ADD-POST"
-const SET_PROFILE="SET_PROFILE"
-const SET_STATUS="SET_STATUS"
-const DELETE_POST="DELETE_POST"
-const SAVE_PHOTO="SAVE_PHOTO"
-
-
+import {BaseThunkType, InferActionsTypes} from "./redux-store";
+import {FormAction} from "redux-form";
 
 let initialState={
   postMessageData: [
@@ -21,12 +14,9 @@ let initialState={
   status:""
 }
 
-export type initialStateType=typeof initialState
-
-  
-const profileReducer=(state=initialState, action:any):initialStateType=>{
+const profileReducer=(state=initialState, action:ActionsType):initialStateType=>{
   switch (action.type){
-    case ADD_POST:
+    case "SN/PROFILE/ADD-POST":
       return{
         ...state,
         postMessageData:[...state.postMessageData, 
@@ -34,20 +24,20 @@ const profileReducer=(state=initialState, action:any):initialStateType=>{
           ],
           newPostText:""
       };
-     case SET_PROFILE:
+     case "SN/PROFILE/SET_PROFILE":
      return{
        ...state,
        profile:action.profile
      };
-     case SET_STATUS:
+     case "SN/PROFILE/SET_STATUS":
      return{
        ...state,
        status:action.status
      };
-     case DELETE_POST:
+     case "SN/PROFILE/DELETE_POST":
        return{
         ...state,postMessageData:state.postMessageData.filter(p=>p.id!==action.postId)}
-        case SAVE_PHOTO:
+        case "SN/PROFILE/SAVE_PHOTO":
           return{
             ...state,
             profile:{...state.profile, photos:action.photo} as ProfileType
@@ -58,108 +48,73 @@ const profileReducer=(state=initialState, action:any):initialStateType=>{
  }
 
 }
-type newPostActionCreatorType={
-    type: typeof ADD_POST,
-    newPostText:string
+
+export const actions={
+    newPostActionCreator: (newPostText: string) => ({type: "SN/PROFILE/ADD-POST", newPostText} as const),
+    setProfile: (profile: ProfileType) => ({type: "SN/PROFILE/SET_PROFILE", profile} as const),
+    setStatus: (status: string) => ({type: "SN/PROFILE/SET_STATUS", status} as const),
+    savePhotoSuccess: (photo: PhotosType) => ({type: "SN/PROFILE/SAVE_PHOTO", photo} as const),
+    deletePost: (postId: number) => ({type: "SN/PROFILE/DELETE_POST", postId} as const)
+
 }
-export const newPostActionCreator=(newPostText:string) : newPostActionCreatorType=>{
-  return{
-    type:ADD_POST,
-    newPostText
+
+export const getProfileThunkCreator = (userId: number) :ThunkType => {
+  return async (dispatch ) => {
+    let response =await usersAPI.getProfile(userId)
+      dispatch(actions.setProfile(response))
   }
 }
 
-type setProfileType={
-    type: typeof SET_PROFILE,
-    profile:ProfileType
-}
-const setProfile=(profile:ProfileType) : setProfileType=>{
-  
-  return{
-    type:SET_PROFILE,
-    profile
+export const getProfileStatusThunkCreator = (userId:number) :ThunkType => {
+  return async (dispatch) => {
+    let response= await usersAPI.getStatus(userId)
+        dispatch(actions.setStatus(response));
   }
 }
 
-type setStatusType={
-    type: typeof SET_STATUS,
-    status:string
-}
-const setStatus=(status:string):setStatusType=>{
-  
-  return{
-    type:SET_STATUS,
-    status
-  }
-}
-
-
-type savePhotoSuccessType={
-    type: typeof SAVE_PHOTO,
-    photo:PhotosType
-}
-const savePhotoSuccess=(photo:PhotosType): savePhotoSuccessType=>{
-  
-  return{
-    type:SAVE_PHOTO,
-    photo
-  }
-}
-
-type deletePostType={
-    type: typeof DELETE_POST,
-    postId:number
-}
-export const deletePost=(postId: number) :deletePostType=>({type:DELETE_POST,postId});
-
-export const getProfileThunkCreator = (userId: number) => {
-  return (dispatch :any) => {
-    usersAPI.getProfile(userId)
-      .then((response: { data: ProfileType; }) => {
-        dispatch(setProfile(response.data));
-      });
-  }
-}
-
-export const getProfileStatusThunkCreator = (userId:number) => {
-  return (dispatch:any) => {
-    usersAPI.getStatus(userId)
-      .then((response: { data: string; }) => {
-        dispatch(setStatus(response.data));
-
-      });
-  }
-}
-
-export const updateProfileStatusThunkCreator = (status: string) => {
-  return (dispatch: any) => {
-    usersAPI.updateStatus(status)
-      .then((response: { data: { resultCode: number; }; }) => {
-        if(response.data.resultCode===0){
-          dispatch(setStatus(status));
+export const updateProfileStatusThunkCreator = (status: string): ThunkType => {
+    return async (dispatch) => {
+        try{
+            let response = await usersAPI.updateStatus(status)
+            if (response.resultCode === 0) {
+                dispatch(actions.setStatus(status));
+            }
+        } catch (error){
+            throw new Error(error)
         }
-      });
-  }
+
+    }
 }
 
-export const savePhoto =   (photo:PhotosType) => {
-  return async (dispatch:any) => {
+export const savePhoto =   (photo:PhotosType)  :ThunkType=>  {
+  return async (dispatch) => {
     let response=await usersAPI.savePhoto(photo)
-        if(response.data.resulCode===0){
-          dispatch(savePhotoSuccess(response.data.data.photos));
+        if(response.resultCode===0){
+          dispatch(actions.savePhotoSuccess(response.data.photos));
         }
   }
 }
 
-export const saveProfile = (profile:ProfileType) => {
+export const saveProfile = (profile:ProfileType) :ThunkType => {
   
-  return async (dispatch:any, getState:any) => {
+  return async (dispatch, getState) => {
     const userId=getState().auth.id
     let response=await usersAPI.saveProfile(profile)
-        if(response.data.resulCode===0){
-          dispatch(getProfileThunkCreator(userId));
+        if(response.data.resultCode===0){
+            if(userId!==null){
+               await dispatch(getProfileThunkCreator(userId))
+            } else{
+                throw new Error("userid cant be null")
+            }
+
         }
   }
 }
+
+
+export type initialStateType=typeof initialState
+type ActionsType=InferActionsTypes<typeof actions>
+type ThunkType=BaseThunkType<ActionsType | FormAction>
+
 
 export default profileReducer

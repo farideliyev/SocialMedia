@@ -1,5 +1,5 @@
 
-import profileReducer, { deletePost } from './profile-reducer';
+import profileReducer, { actions } from './profile-reducer';
 
 let state={
   postMessageData: [
@@ -10,7 +10,7 @@ let state={
 }
 
 test("delete post", ()=>{
-  let action=deletePost(2);
+  let action=actions.deletePost(2);
   let newState=profileReducer(state, action)
   expect(newState.postMessageData.length).toBe(1)
 
