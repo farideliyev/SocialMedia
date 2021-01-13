@@ -66,29 +66,6 @@ let mapStateProps=(state:AppStateType)=>{
     }
 }
 
-// let mapDispatchToProps=(dispatch)=>{
-//     return{
-//         follow:(userId)=>{
-//           dispatch(followAC(userId));
-//         },
-//         unfollow:(userId)=>{
-//             dispatch(unFollowAC(userId));
-//           },
-//           setUsers:(users)=>{
-//             dispatch(setUsersAC(users));
-//           },
-//           setCurrentPage:(pageNumber)=>{
-//             dispatch(setCurrentPageAC(pageNumber));
-//           },
-//           setTotalUsersCount:(totalCount)=>{
-//             dispatch(setTotalUsersCountAC(totalCount));
-//           },
-//           setToggleFetching:(isFetching)=>{
-//             dispatch(setToggleIsFetchingAC(isFetching));
-//           }
-//     }
-// }
-
 
 export default compose<React.ComponentType>(
 

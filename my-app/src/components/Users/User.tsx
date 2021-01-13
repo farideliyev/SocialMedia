@@ -2,8 +2,16 @@ import React from "react";
 import s from './Users.module.css';
 import userPhoto from "../../assets/images/userPhoto.png"
 import { NavLink } from "react-router-dom";
+import {UserType} from "../../redux/types/types";
 
-let User = ({ user, followingInProgress, unfollowThunkCreator, followThunkCreator }) => {
+type PropsType={
+    user: UserType,
+    followingInProgress: Array<number>
+    unfollowThunkCreator:(userId:number)=>void,
+    followThunkCreator:(userId:number)=>void
+}
+
+let User: React.FC<PropsType> = ({ user, followingInProgress, unfollowThunkCreator, followThunkCreator }) => {
     let u = user;
     return (
         <div>

@@ -37,7 +37,7 @@ class App extends Component<MapPropsType & DispatchPropsType > {
               <NavBar/>
               <div className="app-wrapper-content">
 
-                  <Route path='/dialogs' render={() => <DialogsContainer/>}/>
+                  <Route path='/dialogs' render={withSuspense(DialogsContainer)}/>
 
                   <Route path='/profile/:userId?' render={withSuspense(ProfileContainer)}/>
 

@@ -4,8 +4,21 @@ import Preloader from '../../common/Preloader';
 import ProfileStatusWithHook from './ProfileStatusWithHook';
 import userPhoto from "../../../assets/images/userPhoto.png"
 import ProfileDataForm from './ProfileDataForm';
+import {ProfileType} from "../../../redux/types/types";
 
-const ProfileInfo = (props) => {
+
+type PropsType={
+    profile: ProfileType
+    savePhoto: (file: File)=>void,
+    saveProfile: (profile: ProfileType)=>void
+    isOwner: boolean
+    status: string,
+    updateStatus: (status: string)=>void
+
+
+}
+
+const ProfileInfo: React.FC<PropsType>  = (props) => {
   let [editMode, setEditMode]=useState(false);
 
   if (!props.profile) {
