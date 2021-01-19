@@ -1,7 +1,9 @@
 import React from 'react';
 import styles from './Post.module.css';
-
-const Post = (props) => {
+type PostType={
+    message: string
+}
+const Post:React.FC<PostType>= (props) => {
   return ( 
       <div className={styles.item}>
         {props.message}

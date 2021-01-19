@@ -2,7 +2,16 @@ import React from 'react';
 import  styles from './Header.module.css';
 import { NavLink } from 'react-router-dom';
 
-const Header= (props)=> {
+export type MapStatePropsType={
+    isAuth: boolean,
+    login: string | null
+
+}
+
+export type MapDispatchPropsType={
+    logout: () => void
+}
+const Header: React.FC<MapStatePropsType & MapDispatchPropsType> = (props)=> {
   return (
        <header className={styles.header}>
           <img src='https://w7.pngwing.com/pngs/553/496/png-transparent-honda-logo-honda-logo-car-honda-accord-vin-diesel-celebrities-angle-text.png' />

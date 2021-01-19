@@ -21,7 +21,7 @@ let Paginator: React.FC<PropsType> = ({portionSize=10, ...props}) => {
     let [portionNumber, setPortionNumber]=useState(1);
     let leftPortionNumber=(portionNumber-1)*portionSize+1;
     let rightPortionNumber=portionNumber*portionSize;
-    debugger;
+
 
     return (
         

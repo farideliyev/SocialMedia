@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import styles from './ProfileInfo.module.css';
 import Preloader from '../../common/Preloader';
 import ProfileStatusWithHook from './ProfileStatusWithHook';
 import userPhoto from "../../../assets/images/userPhoto.png"
 import ProfileDataForm from './ProfileDataForm';
-import {ProfileType} from "../../../redux/types/types";
+import {ContactsType, ProfileType} from "../../../redux/types/types";
 
 
 type PropsType={
-    profile: ProfileType
+    profile: ProfileType | null
     savePhoto: (file: File)=>void,
     saveProfile: (profile: ProfileType)=>void
     isOwner: boolean
@@ -26,13 +26,13 @@ const ProfileInfo: React.FC<PropsType>  = (props) => {
   };
 
 
-  const onFileUploaded = (e) => {
-    if (e.target.files.length) {
+  const onFileUploaded = (e:ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
       props.savePhoto(e.target.files[0])
     }
   }
-  const onSubmit=(profile)=>{
-    console.log(profile);
+  const onSubmit=(profile :ProfileType)=>{
+
     props.saveProfile(profile)
     setEditMode(false)
   }
@@ -65,8 +65,13 @@ const ProfileInfo: React.FC<PropsType>  = (props) => {
 
   );
 }
+type ProfileDataType={
+    profile: ProfileType
+    isOwner: boolean
+    goToEditMode: () => void
 
-const ProfileData=(props)=>{
+}
+const ProfileData=(props :ProfileDataType)=>{
   return <div>
           {props.isOwner&&
           <div>
@@ -88,7 +93,7 @@ const ProfileData=(props)=>{
           </div>
           <div>
             <b>Contacts</b>:{Object.keys(props.profile.contacts).map(key=>{
-             return <Contact contactTitle={key} contactValue={props.profile.contacts[key]}/>
+             return <Contact contactTitle={key} contactValue={props.profile.contacts[key as keyof ContactsType]}/>
             })}
           </div>
         </div>
@@ -96,8 +101,11 @@ const ProfileData=(props)=>{
 
 
 
-
-const Contact=({contactTitle, contactValue})=>{
+type ContactsPropsType={
+    contactTitle: string
+    contactValue: string
+}
+const Contact : React.FC<ContactsPropsType>=({contactTitle, contactValue})=>{
   return <div className={styles.contacts}>
     <b>{contactTitle}</b>: {contactValue}
     </div>

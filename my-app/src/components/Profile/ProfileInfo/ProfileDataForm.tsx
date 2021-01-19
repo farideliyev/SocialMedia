@@ -1,8 +1,12 @@
 import React from "react"
-import { Field, reduxForm } from 'redux-form';
+import {Field, InjectedFormProps, reduxForm} from 'redux-form';
 import styles from './ProfileInfo.module.css';
+import {ProfileType} from "../../../redux/types/types";
 
-const ProfileDataForm=(props)=>{
+type PropsType={
+  profile: ProfileType
+}
+const ProfileDataForm:React.FC<InjectedFormProps<ProfileType, PropsType> & PropsType>=(props)=>{
     return <form onSubmit={props.handleSubmit}>
     <div>
       <button>save</button>
@@ -32,7 +36,7 @@ const ProfileDataForm=(props)=>{
   }
 
 
-  let ProfileDataFormRedux=reduxForm({
+  let ProfileDataFormRedux=reduxForm<ProfileType, PropsType>({
     form: 'profileEdit'
   })(ProfileDataForm)
 

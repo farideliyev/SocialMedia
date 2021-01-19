@@ -8,11 +8,15 @@ import {PostType} from "../../../redux/types/types";
   
 const maxLength10=maxLengthCreator(10);
 
-type PropsType={
+export type MapStatePropsType={
     posts: Array<PostType>,
+
+}
+
+export type MapDispatchPropsType={
     newPost: (newPostText:string)=>void
 }
-const MyPosts: React.FC<PropsType> = (props) => {
+const MyPosts: React.FC<MapStatePropsType & MapDispatchPropsType> = (props) => {
 
   let onNewPost=(values: MyPostsFormType)=>{
   props.newPost(values.newPostText);

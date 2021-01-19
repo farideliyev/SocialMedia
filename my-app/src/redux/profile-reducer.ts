@@ -21,8 +21,7 @@ const profileReducer=(state=initialState, action:ActionsType):initialStateType=>
         ...state,
         postMessageData:[...state.postMessageData, 
           {message: action.newPostText,id: 3}
-          ],
-          newPostText:""
+          ]
       };
      case "SN/PROFILE/SET_PROFILE":
      return{

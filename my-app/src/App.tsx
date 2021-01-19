@@ -20,6 +20,7 @@ type DispatchPropsType= {
     initializeApp:()=>void
 }
 
+const ProfileContainerWithSuspense=withSuspense(ProfileContainer)
 class App extends Component<MapPropsType & DispatchPropsType > {
 
     componentDidMount() {
@@ -39,7 +40,7 @@ class App extends Component<MapPropsType & DispatchPropsType > {
 
                   <Route path='/dialogs' render={withSuspense(DialogsContainer)}/>
 
-                  <Route path='/profile/:userId?' render={withSuspense(ProfileContainer)}/>
+                  <Route path='/profile/:userId?' render={()=><ProfileContainerWithSuspense/>}/>
 
                   <Route path='/users' render={() => <UsersContainer/>}/>
                   <Route path='/login' render={() => <Login/>}/>
