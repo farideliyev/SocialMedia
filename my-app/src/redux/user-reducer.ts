@@ -100,7 +100,7 @@ export const getUsersThunkCreator = (currentPage :number, pageSize:number) :Thun
 const followUnfollowFlow = async (dispatch:DispatchType, userId:number, apiMethod:any, actionCreator : (userId: number)=>  ActionTypes) => {
      dispatch(actions.toggleFollow(true, userId));
     let response=await apiMethod(userId);
-    if (response.data.resultCode === 0) {
+    if (response.resultCode === 0) {
         dispatch(actionCreator(userId))
     }
     dispatch(actions.toggleFollow(false, userId));
