@@ -1,12 +1,13 @@
 import React from "react";
 import {Field, InjectedFormProps, reduxForm} from 'redux-form';
-import { connect } from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import { LoginUserThunkCreator } from "../../redux/auth-reducer";
 import { Input } from "../common/FormsControls/FormsContols";
 import { required } from "../../utils/validators.js/validator";
 import styles from "../../components/common/FormsControls/FormControls.module.css"
 import { Redirect } from "react-router-dom";
 import {AppStateType} from "../../redux/redux-store";
+
 type ownPropsType={
     captchaUrl:string | null
 }
@@ -38,15 +39,19 @@ type LoginFormFormDataValues={
     captcha:string
 }
 
-let Login: React.FC<MapStateToPropsType & MapDispatchToPropsType>=(props)=>{
+export let Login: React.FC=()=>{
+
+    const isAuth = useSelector((state:AppStateType)=>state.auth.isAuth)
+    const captchaUrl = useSelector((state:AppStateType)=>state.auth.captcha)
+    const dispatch = useDispatch()
+
     const onSubmit=(formData:LoginFormFormDataValues)=>{
-        console.log(formData)
-        props.LoginUserThunkCreator(formData.email, formData.password, formData.rememberMe,formData.captcha)
+        dispatch(LoginUserThunkCreator(formData.email, formData.password, formData.rememberMe,formData.captcha))
     }
-    if(props.isAuth) return <Redirect to={"/profile"}/>
+    if(isAuth) return <Redirect to={"/profile"}/>
     return <>
              <h1>Login</h1>
-            <ReduxLoginForm onSubmit={onSubmit} captchaUrl={props.captchaUrl} />
+            <ReduxLoginForm onSubmit={onSubmit} captchaUrl={captchaUrl} />
     
     </>
 }
@@ -55,20 +60,6 @@ let ReduxLoginForm=reduxForm<LoginFormFormDataValues, ownPropsType>({
     form: 'login'
   })(LoginForm)
 
-type MapStateToPropsType={
-    isAuth:boolean
-    captchaUrl: string | null
-}
 
-type MapDispatchToPropsType={
-    LoginUserThunkCreator:(email:string, password: string, rememberMe:boolean, captcha:string)=>void
-}
 
- let mapStateToProps=(state:AppStateType) :MapStateToPropsType=>({
-    isAuth:state.auth.isAuth,
-     captchaUrl: state.auth.captcha
- } )
 
- let connectLoginForm=connect(mapStateToProps,{LoginUserThunkCreator})(Login) 
-
-export  default connectLoginForm

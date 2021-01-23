@@ -1,38 +1,63 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Paginator from "../common/Paginator/Paginator";
 import User from "./User";
-import {UserType} from "../../redux/types/types";
 import {UsersSearchForm} from "./UsersSearchForm";
-import {FilterType} from "../../redux/user-reducer";
+import {FilterType, followThunkCreator, getUsersThunkCreator, unfollowThunkCreator} from "../../redux/user-reducer";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    getCurrentPage,
+    getFilter,
+    getFollowingInProgress,
+    getPageSize,
+    getTotalUsersCount,
+    getUsers
+} from "../../redux/users-selectors";
 
 type PropsType = {
-    totalUsersCount: number
-    pageSize: number
-    portionSize?: number
-    currentPage: number
-    onPageChanged: (pageNumber: number) => void
-    onFilterChanged: (filter: FilterType) => void
-    users: Array<UserType>
-    followingInProgress: Array<number>
-    followThunkCreator: (userId: number) => void
-    unfollowThunkCreator: (userId: number) => void
-
 }
 
-let Users: React.FC<PropsType> = ({currentPage, users, totalUsersCount, pageSize, onPageChanged, ...props}) => {
+export let Users: React.FC<PropsType> = React.memo(() => {
 
+    const totalUsersCount = useSelector(getTotalUsersCount)
+    const users = useSelector(getUsers)
+    const pageSize = useSelector(getPageSize)
+    const currentPage = useSelector(getCurrentPage)
+    const filter = useSelector(getFilter)
+    const followingInProgress = useSelector(getFollowingInProgress)
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+        dispatch(getUsersThunkCreator(currentPage, pageSize,filter))
+    }, [])
+
+    const onFilterChanged = (filter: FilterType) => {
+        dispatch(getUsersThunkCreator(1, pageSize, filter))
+    }
+
+    const onPageChanged = (pageNumber:number) => {
+        dispatch(getUsersThunkCreator(pageNumber,pageSize, filter))
+
+    }
+
+    const follow = (userId: number) =>{
+        dispatch(followThunkCreator(userId))
+    }
+
+    const unfollow = (userId: number) =>{
+        dispatch(unfollowThunkCreator(userId))
+    }
     return (
         <div>
-            <UsersSearchForm onFilterChanged={props.onFilterChanged}/>
+            <UsersSearchForm onFilterChanged={onFilterChanged}/>
             <div>
                 <Paginator currentPage={currentPage} onPageChanged={onPageChanged}
                            totalUsersCount={totalUsersCount} pageSize={pageSize}
                 />
                 {
                     users.map(u =>
-                        <User key={u.id} followingInProgress={props.followingInProgress} user={u}
-                              followThunkCreator={props.followThunkCreator}
-                              unfollowThunkCreator={props.unfollowThunkCreator}
+                        <User key={u.id} followingInProgress={followingInProgress} user={u}
+                              followThunkCreator={follow}
+                              unfollowThunkCreator={unfollow}
 
                         />
                     )
@@ -43,6 +68,6 @@ let Users: React.FC<PropsType> = ({currentPage, users, totalUsersCount, pageSize
         </div>
     )
 
-}
+})
 
 export default Users
