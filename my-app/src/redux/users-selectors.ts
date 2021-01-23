@@ -12,6 +12,9 @@ export let getPageSize=(state:AppStateType)=>{
 export let getCurrentPage=(state:AppStateType)=>{
  return state.usersPage.currentPage
 }
+export let getFilter=(state:AppStateType)=>{
+ return state.usersPage.filter
+}
 export let getIsFetching=(state:AppStateType)=>{
  return state.usersPage.isFetching
 }
