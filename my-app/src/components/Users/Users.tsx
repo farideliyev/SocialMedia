@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useImperativeHandle} from "react";
 import Paginator from "../common/Paginator/Paginator";
 import User from "./User";
 import {UsersSearchForm} from "./UsersSearchForm";
@@ -12,8 +12,16 @@ import {
     getTotalUsersCount,
     getUsers
 } from "../../redux/users-selectors";
+import { useHistory } from "react-router-dom";
+import queryString from 'querystring';
 
 type PropsType = {
+}
+
+type QueryParamsType = {
+    term?: string,
+    friend?: string,
+    page?: string
 }
 
 export let Users: React.FC<PropsType> = React.memo(() => {
@@ -25,10 +33,46 @@ export let Users: React.FC<PropsType> = React.memo(() => {
     const filter = useSelector(getFilter)
     const followingInProgress = useSelector(getFollowingInProgress)
     const dispatch = useDispatch()
+    const history = useHistory()
 
     useEffect(()=>{
-        dispatch(getUsersThunkCreator(currentPage, pageSize,filter))
+
+
+        const parsed = queryString.parse(history.location.search.substr(1)) as QueryParamsType
+         let actualPage = currentPage
+        let actualFilter = filter
+
+        if (parsed.page) actualPage = Number(parsed.page)
+        if (parsed.term) actualFilter = {...actualFilter, term: parsed.term as string}
+
+        switch (parsed.friend){
+
+            case "true" :
+                actualFilter={...actualFilter, friend: true}
+                break;
+            case "false":
+                actualFilter={...actualFilter, friend: false}
+                break;
+            case "null":
+                actualFilter={...actualFilter, friend: null}
+                break;
+        }
+
+
+        dispatch(getUsersThunkCreator(actualPage, pageSize, actualFilter))
     }, [])
+
+    useEffect(()=>{
+        const query : QueryParamsType= {}
+        if(filter.term) query.term=filter.term
+        if(filter.friend) query.friend=String(filter.friend)
+        if(currentPage !==1) query.page=String(currentPage)
+        debugger
+        history.push({
+            pathname: "/users",
+            search: queryString.stringify(query)
+        })
+    }, [filter, currentPage])
 
     const onFilterChanged = (filter: FilterType) => {
         dispatch(getUsersThunkCreator(1, pageSize, filter))
