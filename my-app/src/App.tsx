@@ -17,10 +17,12 @@ import {LaptopOutlined, UserOutlined} from '@ant-design/icons';
 import styles from "./components/NavBar/NavBar.module.css";
 import {AppHeader} from "./components/Header/Header";
 
+
 const {SubMenu} = Menu;
 const {Header, Content, Footer, Sider} = Layout;
 
 const ProfileContainer = React.lazy(() => import('./components/Profile/ProfileContainer'));
+const ChatPage = React.lazy(() => import('./pages/Chat/ChatPage'));
 
 type MapPropsType = ReturnType<typeof mapStateToProps>
 type DispatchPropsType = {
@@ -28,6 +30,7 @@ type DispatchPropsType = {
 }
 
 const ProfileContainerWithSuspense = withSuspense(ProfileContainer)
+const ChatPageWithSuspense = withSuspense(ChatPage)
 
 class App extends Component<MapPropsType & DispatchPropsType> {
 
@@ -61,12 +64,15 @@ class App extends Component<MapPropsType & DispatchPropsType> {
 
                                 <SubMenu key="sub1" icon={<UserOutlined/>} title="My Profile">
                                     <Menu.Item key="1"><NavLink to="/profile">Profile</NavLink></Menu.Item>
-                                    <Menu.Item key="2"><NavLink to="/dialogs"
-                                                                activeClassName={styles.active}>Messages</NavLink></Menu.Item>
+                                    <Menu.Item key="2"><NavLink to="/dialogs">Messages</NavLink></Menu.Item>
                                 </SubMenu>
 
                                 <SubMenu key="sub2" icon={<LaptopOutlined/>} title="Developers">
                                     <Menu.Item key="5"><NavLink to="/developers">Developers</NavLink></Menu.Item>
+                                </SubMenu>
+
+                                <SubMenu key="sub2" icon={<LaptopOutlined/>} title="Chat">
+                                    <Menu.Item key="5"><NavLink to="/chat">Chat</NavLink></Menu.Item>
                                 </SubMenu>
 
                             </Menu>
@@ -80,6 +86,7 @@ class App extends Component<MapPropsType & DispatchPropsType> {
                                 <Route path='/profile/:userId?' render={() => <ProfileContainerWithSuspense/>}/>
 
                                 <Route path='/developers' render={() => <UserPage/>}/>
+                                <Route path='/chat' render={() => <ChatPageWithSuspense/>}/>
                                 <Route path='/login' render={() => <Login/>}/>
 
 
