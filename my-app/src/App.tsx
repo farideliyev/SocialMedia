@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
-import NavBar from './components/NavBar/NavBar';
 import DialogsContainer from './components/Dialogs/DialogsContainer'
-import {Route, withRouter} from 'react-router-dom';
-import HeaderContainer from './components/Header/HeaderContainer';
+import {NavLink, Route, withRouter} from 'react-router-dom';
 import {Login} from './components/Login/Login';
 import {initializeApp} from './redux/app-reducer';
 import {connect} from 'react-redux';
@@ -12,16 +10,26 @@ import {compose} from 'redux';
 import {withSuspense} from './hoc/withSuspense';
 import {AppStateType} from "./redux/redux-store";
 import {UserPage} from "./components/Users/UsersContainer";
+import 'antd/dist/antd.css';
+
+import {Breadcrumb, Layout, Menu} from 'antd';
+import {LaptopOutlined, UserOutlined} from '@ant-design/icons';
+import styles from "./components/NavBar/NavBar.module.css";
+import {AppHeader} from "./components/Header/Header";
+
+const {SubMenu} = Menu;
+const {Header, Content, Footer, Sider} = Layout;
 
 const ProfileContainer = React.lazy(() => import('./components/Profile/ProfileContainer'));
 
-type MapPropsType= ReturnType<typeof mapStateToProps>
-type DispatchPropsType= {
-    initializeApp:()=>void
+type MapPropsType = ReturnType<typeof mapStateToProps>
+type DispatchPropsType = {
+    initializeApp: () => void
 }
 
-const ProfileContainerWithSuspense=withSuspense(ProfileContainer)
-class App extends Component<MapPropsType & DispatchPropsType > {
+const ProfileContainerWithSuspense = withSuspense(ProfileContainer)
+
+class App extends Component<MapPropsType & DispatchPropsType> {
 
     componentDidMount() {
         this.props.initializeApp()
@@ -32,35 +40,68 @@ class App extends Component<MapPropsType & DispatchPropsType > {
 
             return <Preloader/>
         }
-      return (
-          <div className='app-wrapper'>
-              <HeaderContainer/>
-              <NavBar/>
-              <div className="app-wrapper-content">
+        return (
+            <Layout>
+               <AppHeader/>
+                <Content style={{padding: '0 50px'}}>
+                    <Breadcrumb style={{margin: '16px 0'}}>
+                        <Breadcrumb.Item>Home</Breadcrumb.Item>
+                        <Breadcrumb.Item>List</Breadcrumb.Item>
+                        <Breadcrumb.Item>App</Breadcrumb.Item>
+                    </Breadcrumb>
+                    <Layout className="site-layout-background" style={{padding: '24px 0'}}>
+                        <Sider className="site-layout-background" width={200}>
+                            <Menu
+                                mode="inline"
+                                // defaultSelectedKeys={['1']}
+                                // defaultOpenKeys={['sub1']}
+                                style={{height: '100%'}}
+                            >
 
-                  <Route path='/dialogs' render={withSuspense(DialogsContainer)}/>
 
-                  <Route path='/profile/:userId?' render={()=><ProfileContainerWithSuspense/>}/>
+                                <SubMenu key="sub1" icon={<UserOutlined/>} title="My Profile">
+                                    <Menu.Item key="1"><NavLink to="/profile">Profile</NavLink></Menu.Item>
+                                    <Menu.Item key="2"><NavLink to="/dialogs"
+                                                                activeClassName={styles.active}>Messages</NavLink></Menu.Item>
+                                </SubMenu>
 
-                  <Route path='/users' render={() => <UserPage/>}/>
-                  <Route path='/login' render={() => <Login/>}/>
+                                <SubMenu key="sub2" icon={<LaptopOutlined/>} title="Developers">
+                                    <Menu.Item key="5"><NavLink to="/developers">Developers</NavLink></Menu.Item>
+                                </SubMenu>
+
+                            </Menu>
+                        </Sider>
+                        <Content style={{padding: '0 24px', minHeight: 280}}>
+
+                            <div>
+
+                                <Route path='/dialogs' render={withSuspense(DialogsContainer)}/>
+
+                                <Route path='/profile/:userId?' render={() => <ProfileContainerWithSuspense/>}/>
+
+                                <Route path='/developers' render={() => <UserPage/>}/>
+                                <Route path='/login' render={() => <Login/>}/>
 
 
-              </div>
+                            </div>
 
-          </div>
+                        </Content>
+                    </Layout>
+                </Content>
+                <Footer style={{textAlign: 'center'}}>Samurai Social Network created by Farid Aliyev</Footer>
+            </Layout>
 
 
-      )
-  }
+        )
+    }
 }
 
-const mapStateToProps=(state: AppStateType)=>({
-  initialized:state.app.initialized
+const mapStateToProps = (state: AppStateType) => ({
+    initialized: state.app.initialized
 })
 
 export default compose(
-  withRouter,
-  connect(mapStateToProps, {initializeApp})
+    withRouter,
+    connect(mapStateToProps, {initializeApp})
 )(App)
 

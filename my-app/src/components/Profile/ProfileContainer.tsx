@@ -44,7 +44,7 @@ class ProfileContainer extends React.Component<PropsType> {
     if(!userId){
         console.log('ID should exist in URL')
     }else{
-        debugger
+
         this.props.getProfileThunkCreator(userId);
         this.props.getProfileStatusThunkCreator(userId);
     }

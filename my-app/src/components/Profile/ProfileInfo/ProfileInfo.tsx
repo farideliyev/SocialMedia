@@ -39,9 +39,9 @@ const ProfileInfo: React.FC<PropsType>  = (props) => {
 
   return (
     <div>
-      <div>
-        <img src='https://s.auto.drom.ru/i24202/c/photos/fullsize/honda/civic_type_r/honda_civic_type_r_640063.jpg' />
-      </div>
+      {/*<div>*/}
+      {/*  <img src='https://s.auto.drom.ru/i24202/c/photos/fullsize/honda/civic_type_r/honda_civic_type_r_640063.jpg' />*/}
+      {/*</div>*/}
       <div className={styles.descriptionBlock}>
         <img src={props.profile.photos.large || userPhoto} alt="acili" />
 
