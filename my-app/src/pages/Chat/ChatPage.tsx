@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { ChatMessageType } from "../../api/chat-api";
 import {useDispatch, useSelector} from "react-redux";
 import {sendMessage, startMessagesListening, stopMessagesListening} from "../../redux/chat-reducer";
@@ -14,6 +14,7 @@ const ChatPage: React.FC = () =>{
 const Chat = () =>{
     const dispatch = useDispatch()
     useEffect(()=>{
+
         dispatch(startMessagesListening())
 
       return ()=>{
@@ -32,19 +33,27 @@ const Chat = () =>{
 const Messages: React.FC<{}> = ({}) =>{
 
     const messages = useSelector((state :AppStateType)=> state.chat.messages )
+    const messagesAnchorRef = useRef<HTMLDivElement>(null)
+
+    useEffect(()=>{
+       messagesAnchorRef.current?.scrollIntoView({behavior:"smooth"})
+    }, [messages])
+
     return <div style={{height: "400px", overflow: "auto"}}>
         {messages.map((m, index)=><Message message={m} key={index}/>)}
-
+        <div ref={messagesAnchorRef}></div>
     </div>
 }
 
 const Message: React.FC<{message: ChatMessageType}> = ({message}) =>{
+
 
     return <div>
       <img src={message.photo} style={{width: "30px"}}/> <b>{message.userName}</b>
         <br/>
         {message.message}
         <hr/>
+
     </div>
 }
 
@@ -52,8 +61,8 @@ const Message: React.FC<{message: ChatMessageType}> = ({message}) =>{
 
 const AddMessageForm: React.FC<{}> = ({}) =>{
     const [message, setMessage] = useState("")
-    const [readyStatus, setReadyStatus] = useState<'pending' | 'ready'>('pending')
     const dispatch = useDispatch()
+    const status = useSelector((state:AppStateType) =>state.chat.status )
 
     const sendMessageHandler = () =>{
         if(message) {
@@ -68,7 +77,7 @@ const AddMessageForm: React.FC<{}> = ({}) =>{
             <textarea onChange={e=>setMessage(e.currentTarget.value)} value={message}/>
         </div>
        <div>
-           <button onClick={sendMessageHandler}>Send</button>
+           <button disabled={status === "pending"} onClick={sendMessageHandler}>Send</button>
        </div>
 
     </div>
